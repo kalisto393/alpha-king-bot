@@ -1,0 +1,39 @@
+services:
+  - type: web
+    name: alpha-king-bot-backend
+    runtime: node
+    plan: starter
+    buildCommand: cd server && npm install
+    startCommand: cd server && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: JWT_SECRET
+        sync: false
+      - key: FRONTEND_URL
+        value: https://alpha-king-bot-frontend.onrender.com
+      - key: DATABASE_URL
+        sync: false
+      - key: REDIS_URL
+        sync: false
+
+  - type: static
+    name: alpha-king-bot-frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist
+    routes:
+      - path: /api
+        destination: https://alpha-king-bot-backend.onrender.com/api
+
+databases:
+  - name: alpha_king_db
+    databaseName: alpha_king_bot
+    plan: starter
+    postgreSQL: true
+
+environment:
+  - type: pserv
+    name: alpha-king-redis
+    plan: starter
